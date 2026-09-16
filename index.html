@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Central de Links</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 :root {
   --bg: #0B0E14;
@@ -217,6 +218,8 @@ header h1 { font-family: 'IBM Plex Mono', monospace; font-size: 1.05rem; font-we
 }
 .empty-state .empty-icon { font-size: 2rem; margin-bottom: 12px; opacity: 0.4; }
 .empty-state p { margin-top: 6px; font-size: 0.72rem; color: var(--text-dim); }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+.status-dot.offline { background: var(--red); }
 @media (max-width: 540px) {
   header { flex-wrap: wrap; gap: 10px; }
   .header-right { width: 100%; }
@@ -234,6 +237,7 @@ header h1 { font-family: 'IBM Plex Mono', monospace; font-size: 1.05rem; font-we
       <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
     </div>
     <h1>Central de Links</h1>
+    <span class="status-dot" id="statusDot" title="Conectando..."></span>
     <div class="header-right">
       <div class="search-box">
         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -309,169 +313,7 @@ header h1 { font-family: 'IBM Plex Mono', monospace; font-size: 1.05rem; font-we
   </div>
 </div>
 
-<script>
-let entries = [];
-let editId = null;
-
-function load() {
-  try { const s = localStorage.getItem('xav_entries'); entries = s ? JSON.parse(s) : []; } catch { entries = []; }
-}
-function save() {
-  try { localStorage.setItem('xav_entries', JSON.stringify(entries)); } catch {}
-}
-function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
-function attr(s) { return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-function render(filter) {
-  const q = (filter || '').toLowerCase().trim();
-  const container = document.getElementById('sections');
-  const groups = {};
-  entries.forEach(e => {
-    const match = !q || e.name.toLowerCase().includes(q) || (e.desc||'').toLowerCase().includes(q) || e.category.toLowerCase().includes(q) || (e.email||'').toLowerCase().includes(q);
-    if (!match) return;
-    if (!groups[e.category]) groups[e.category] = [];
-    groups[e.category].push(e);
-  });
-  const cats = Object.keys(groups).sort();
-  if (!cats.length) { container.innerHTML = ''; document.getElementById('empty').hidden = false; return; }
-  document.getElementById('empty').hidden = true;
-  container.innerHTML = cats.map(cat => `
-    <div class="section">
-      <div class="section-label">${esc(cat)} <span class="section-count">${groups[cat].length}</span></div>
-      <div class="section-cards">${groups[cat].map(cardHtml).join('')}</div>
-    </div>`).join('');
-  updateCatList();
-}
-
-function cardHtml(e) {
-  const passLen = (e.pass||'').length || 8;
-  return `<div class="card" data-id="${e.id}">
-    <div class="card-header">
-      <div class="card-icon ${e.color}">${esc(e.icon)}</div>
-      <div><div class="card-title">${esc(e.name)}</div><div class="card-subtitle">${esc(e.desc)}</div></div>
-      <div class="card-header-right">
-        <button class="btn-card-action" onclick="editEntry('${e.id}')" title="Editar">
-          <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        </button>
-        <button class="btn-card-action delete" onclick="deleteEntry('${e.id}')" title="Excluir">
-          <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-        </button>
-      </div>
-    </div>
-    <div class="card-fields">
-      <div class="field">
-        <span class="field-label">email</span>
-        <span class="field-value" data-val="${attr(e.email)}">${esc(e.email)}</span>
-        <button class="btn-copy" onclick="copyVal(this)">copiar</button>
-      </div>
-      <div class="field">
-        <span class="field-label">senha</span>
-        <span class="field-value masked" data-val="${attr(e.pass)}"><span>${'*'.repeat(passLen)}</span></span>
-        <button class="btn-toggle" onclick="toggleMask(this)"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-        <button class="btn-copy" onclick="copyVal(this)">copiar</button>
-      </div>
-    </div>
-    <div class="card-actions">
-      <a class="btn-login" href="${attr(e.url)}" target="_blank" rel="noopener" onclick="autoCopy(this)">
-        Acessar <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-      </a>
-    </div>
-  </div>`;
-}
-
-function copyVal(btn) {
-  const val = btn.closest('.field').querySelector('.field-value').dataset.val;
-  navigator.clipboard.writeText(val).then(() => {
-    btn.textContent = 'copiado'; btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = 'copiar'; btn.classList.remove('copied'); }, 1500);
-  });
-}
-function toggleMask(btn) {
-  const span = btn.closest('.field').querySelector('.field-value');
-  if (span.classList.contains('masked')) {
-    span.textContent = span.dataset.val; span.classList.remove('masked');
-    btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
-  } else {
-    span.textContent = '*'.repeat(span.dataset.val.length); span.classList.add('masked');
-    btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
-  }
-}
-function autoCopy(btn) {
-  const fields = btn.closest('.card').querySelectorAll('.field-value[data-val]');
-  const senha = fields.length > 1 ? fields[1].dataset.val : fields[0].dataset.val;
-  navigator.clipboard.writeText(senha).then(() => showToast('Senha copiada — cole no login'));
-}
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
-}
-function openModal() {
-  editId = null;
-  document.getElementById('modalTitle').textContent = 'Novo Acesso';
-  document.getElementById('btnSave').textContent = 'Salvar';
-  ['fName','fDesc','fUrl','fEmail','fPass','fIcon','fCategory'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('fColor').value = 'blue';
-  document.getElementById('modal').classList.add('open');
-  document.getElementById('fName').focus();
-}
-function editEntry(id) {
-  const e = entries.find(x => x.id === id); if (!e) return;
-  editId = id;
-  document.getElementById('modalTitle').textContent = 'Editar Acesso';
-  document.getElementById('btnSave').textContent = 'Atualizar';
-  document.getElementById('fName').value = e.name;
-  document.getElementById('fDesc').value = e.desc || '';
-  document.getElementById('fUrl').value = e.url || '';
-  document.getElementById('fEmail').value = e.email || '';
-  document.getElementById('fPass').value = e.pass || '';
-  document.getElementById('fColor').value = e.color || 'blue';
-  document.getElementById('fIcon').value = e.icon || '';
-  document.getElementById('fCategory').value = e.category || '';
-  document.getElementById('modal').classList.add('open');
-}
-function closeModal() { document.getElementById('modal').classList.remove('open'); }
-function saveEntry() {
-  const name = document.getElementById('fName').value.trim();
-  const category = document.getElementById('fCategory').value.trim();
-  if (!name || !category) { showToast('Nome e categoria obrigatorios'); return; }
-  const data = {
-    name, category,
-    desc: document.getElementById('fDesc').value.trim(),
-    url: document.getElementById('fUrl').value.trim(),
-    email: document.getElementById('fEmail').value.trim(),
-    pass: document.getElementById('fPass').value,
-    color: document.getElementById('fColor').value,
-    icon: document.getElementById('fIcon').value.trim() || name[0].toUpperCase()
-  };
-  if (editId) {
-    const idx = entries.findIndex(x => x.id === editId);
-    if (idx >= 0) entries[idx] = { ...entries[idx], ...data };
-    showToast('Acesso atualizado');
-  } else {
-    data.id = 'e' + Date.now();
-    entries.push(data);
-    showToast('Acesso adicionado');
-  }
-  save(); render(document.getElementById('search').value); closeModal();
-}
-function deleteEntry(id) {
-  const e = entries.find(x => x.id === id);
-  if (!e || !confirm('Excluir "' + e.name + '"?')) return;
-  entries = entries.filter(x => x.id !== id);
-  save(); render(document.getElementById('search').value); showToast('Acesso excluido');
-}
-function updateCatList() {
-  const cats = [...new Set(entries.map(e => e.category))].sort();
-  document.getElementById('catList').innerHTML = cats.map(c => '<option value="' + esc(c) + '">').join('');
-}
-
-document.getElementById('search').addEventListener('input', e => render(e.target.value));
-document.getElementById('modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-
-load(); render();
-</script>
+<script src="app.js"></script>
 
 </body>
 </html>
