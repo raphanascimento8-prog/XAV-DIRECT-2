@@ -4,44 +4,53 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Central de Links</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
 <style>
 :root {
-  --bg: #0F1219;
-  --surface: #171C27;
-  --surface-hover: #1E2433;
-  --border: #262E3E;
+  --bg: #0B0E14;
+  --surface: #141820;
+  --surface-hover: #1A1F2B;
+  --surface-modal: #161B25;
+  --border: #232A3A;
+  --border-focus: #4B8BF5;
   --text: #D6DCE8;
   --text-muted: #6A7590;
   --text-dim: #3E4A60;
   --accent: #4B8BF5;
-  --accent-dim: rgba(75,139,245,0.12);
+  --accent-dim: rgba(75,139,245,0.10);
   --green: #3FB87F;
-  --green-dim: rgba(63,184,127,0.12);
+  --green-dim: rgba(63,184,127,0.10);
   --amber: #E0A030;
-  --amber-dim: rgba(224,160,48,0.12);
+  --amber-dim: rgba(224,160,48,0.10);
   --purple: #9B6BF5;
-  --purple-dim: rgba(155,107,245,0.12);
+  --purple-dim: rgba(155,107,245,0.10);
+  --red: #E0503A;
+  --red-dim: rgba(224,80,58,0.10);
   --copied: #3FB87F;
+  --overlay: rgba(5,8,14,0.7);
 }
 @media (prefers-color-scheme: light) {
   :root {
-    --bg: #F3F5F8;
+    --bg: #F0F2F6;
     --surface: #FFFFFF;
-    --surface-hover: #F0F2F6;
-    --border: #DDE1EA;
+    --surface-hover: #F5F6FA;
+    --surface-modal: #FFFFFF;
+    --border: #D8DDE8;
     --text: #1A1F2B;
     --text-muted: #6A7590;
     --text-dim: #B0B8C8;
     --accent: #2B6FDB;
-    --accent-dim: rgba(43,111,219,0.08);
+    --accent-dim: rgba(43,111,219,0.07);
     --green: #1E8A54;
-    --green-dim: rgba(30,138,84,0.08);
+    --green-dim: rgba(30,138,84,0.07);
     --amber: #B07A10;
-    --amber-dim: rgba(176,122,16,0.08);
+    --amber-dim: rgba(176,122,16,0.07);
     --purple: #7040D0;
-    --purple-dim: rgba(112,64,208,0.08);
+    --purple-dim: rgba(112,64,208,0.07);
+    --red: #C03A28;
+    --red-dim: rgba(192,58,40,0.07);
     --copied: #1E8A54;
+    --overlay: rgba(0,0,0,0.3);
   }
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -49,243 +58,171 @@ body {
   font-family: 'IBM Plex Sans', system-ui, sans-serif;
   background: var(--bg);
   color: var(--text);
-  padding: 24px 20px;
+  padding: 28px 20px;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
-.shell { max-width: 680px; margin: 0 auto; }
-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 32px;
+.shell { max-width: 720px; margin: 0 auto; }
+header { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+.logo {
+  width: 32px; height: 32px; border-radius: 8px; background: var(--accent-dim);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
-header h1 {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 1.1rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  color: var(--text);
-  flex-shrink: 0;
-}
-header .dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--green);
-  flex-shrink: 0;
-}
-.search-box {
-  flex: 1;
-  position: relative;
-}
+.logo svg { width: 16px; height: 16px; stroke: var(--accent); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+header h1 { font-family: 'IBM Plex Mono', monospace; font-size: 1.05rem; font-weight: 600; color: var(--text); flex-shrink: 0; }
+.header-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.search-box { position: relative; width: 200px; }
 .search-box input {
-  width: 100%;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 8px 12px 8px 32px;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.82rem;
-  color: var(--text);
-  outline: none;
+  width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+  padding: 7px 10px 7px 30px; font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem;
+  color: var(--text); outline: none; transition: border-color 0.15s;
 }
 .search-box input::placeholder { color: var(--text-dim); }
-.search-box input:focus { border-color: var(--accent); }
+.search-box input:focus { border-color: var(--border-focus); }
 .search-box svg {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 14px; height: 14px;
-  fill: none;
-  stroke: var(--text-dim);
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  position: absolute; left: 9px; top: 50%; transform: translateY(-50%);
+  width: 13px; height: 13px; fill: none; stroke: var(--text-dim); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
 }
-
-.section { margin-bottom: 28px; }
+.btn-add {
+  display: flex; align-items: center; gap: 5px; background: var(--accent); color: #fff;
+  border: none; border-radius: 6px; padding: 7px 14px; font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: opacity 0.15s; white-space: nowrap;
+}
+.btn-add:hover { opacity: 0.88; }
+.btn-add svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; }
+.section { margin-bottom: 24px; }
 .section-label {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 10px;
-  padding-left: 2px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted);
+  margin-bottom: 8px; padding-left: 2px; display: flex; align-items: center; gap: 8px;
 }
-.section-label::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.section-count {
+  font-size: 0.58rem; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 1px 7px; color: var(--text-dim); font-weight: 500;
 }
-.section-cards { display: flex; flex-direction: column; gap: 10px; }
-
+.section-cards { display: flex; flex-direction: column; gap: 8px; }
 .card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 18px 20px;
-  transition: border-color 0.15s;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  padding: 16px 18px; transition: border-color 0.15s;
 }
-.card:hover { border-color: color-mix(in srgb, var(--border) 50%, var(--accent) 50%); }
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
-}
+.card:hover { border-color: color-mix(in srgb, var(--border) 40%, var(--accent) 60%); }
+.card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
 .card-icon {
-  width: 38px; height: 38px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
-  font-weight: 700;
-  flex-shrink: 0;
-  line-height: 1;
+  width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center;
+  justify-content: center; font-size: 1rem; font-weight: 700; flex-shrink: 0; line-height: 1;
 }
 .card-icon.amber { background: var(--amber-dim); color: var(--amber); }
 .card-icon.purple { background: var(--purple-dim); color: var(--purple); }
 .card-icon.blue { background: var(--accent-dim); color: var(--accent); }
 .card-icon.green { background: var(--green-dim); color: var(--green); }
-.card-title { font-size: 0.95rem; font-weight: 600; line-height: 1.3; }
-.card-subtitle { font-size: 0.72rem; color: var(--text-muted); margin-top: 1px; }
-.card-fields { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.card-icon.red { background: var(--red-dim); color: var(--red); }
+.card-title { font-size: 0.9rem; font-weight: 600; line-height: 1.3; }
+.card-subtitle { font-size: 0.7rem; color: var(--text-muted); margin-top: 1px; }
+.card-header-right { margin-left: auto; display: flex; gap: 4px; }
+.btn-card-action {
+  background: none; border: none; cursor: pointer; color: var(--text-dim);
+  padding: 4px; display: flex; align-items: center; border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+}
+.btn-card-action:hover { color: var(--text-muted); background: var(--bg); }
+.btn-card-action svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.btn-card-action.delete:hover { color: var(--red); }
+.card-fields { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
 .field {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 8px 10px;
+  display: flex; align-items: center; gap: 8px; background: var(--bg);
+  border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px;
 }
 .field-label {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  width: 42px;
-  flex-shrink: 0;
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-dim); width: 40px; flex-shrink: 0;
 }
 .field-value {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.8rem;
-  color: var(--text);
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  user-select: all;
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; color: var(--text);
+  flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; user-select: all;
 }
 .field-value.masked { user-select: none; letter-spacing: 0.1em; }
 .btn-copy {
-  background: none;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 3px 6px;
-  cursor: pointer;
-  color: var(--text-muted);
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.62rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  transition: color 0.15s, border-color 0.15s;
-  flex-shrink: 0;
-  line-height: 1.4;
+  background: none; border: 1px solid var(--border); border-radius: 4px; padding: 2px 6px;
+  cursor: pointer; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.58rem; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase;
+  transition: color 0.15s, border-color 0.15s; flex-shrink: 0; line-height: 1.4;
 }
 .btn-copy:hover { color: var(--text); border-color: var(--text-muted); }
 .btn-copy.copied { color: var(--copied); border-color: var(--copied); }
 .btn-toggle {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--text-dim);
-  padding: 2px;
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-  transition: color 0.15s;
+  background: none; border: none; cursor: pointer; color: var(--text-dim);
+  padding: 2px; display: flex; align-items: center; flex-shrink: 0; transition: color 0.15s;
 }
 .btn-toggle:hover { color: var(--text-muted); }
-.btn-toggle svg {
-  width: 14px; height: 14px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
+.btn-toggle svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .card-actions { display: flex; gap: 8px; align-items: center; }
 .btn-login {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 16px;
-  font-family: 'IBM Plex Sans', system-ui, sans-serif;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-decoration: none;
-  cursor: pointer;
-  transition: opacity 0.15s;
+  display: inline-flex; align-items: center; gap: 5px; background: var(--accent); color: #fff;
+  border: none; border-radius: 6px; padding: 7px 14px; font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-size: 0.78rem; font-weight: 600; text-decoration: none; cursor: pointer; transition: opacity 0.15s;
 }
 .btn-login:hover { opacity: 0.88; }
-.btn-login svg {
-  width: 14px; height: 14px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
+.btn-login svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .toast {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: var(--green);
-  color: #fff;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.78rem;
-  font-weight: 600;
-  padding: 10px 20px;
-  border-radius: 8px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s, transform 0.2s;
-  z-index: 100;
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--green); color: #fff; font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem; font-weight: 600; padding: 10px 20px; border-radius: 8px;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; z-index: 200;
 }
-.toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.modal-overlay {
+  position: fixed; inset: 0; background: var(--overlay);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.2s; padding: 20px;
 }
+.modal-overlay.open { opacity: 1; pointer-events: auto; }
+.modal {
+  background: var(--surface-modal); border: 1px solid var(--border); border-radius: 12px;
+  padding: 24px; width: 100%; max-width: 440px; transform: translateY(10px); transition: transform 0.2s;
+}
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal-title { font-family: 'IBM Plex Mono', monospace; font-size: 0.95rem; font-weight: 600; margin-bottom: 20px; }
+.form-group { margin-bottom: 14px; }
+.form-label {
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 5px; display: block;
+}
+.form-input, .form-select {
+  width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+  padding: 9px 12px; font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem;
+  color: var(--text); outline: none; transition: border-color 0.15s;
+}
+.form-input:focus, .form-select:focus { border-color: var(--border-focus); }
+.form-input::placeholder { color: var(--text-dim); }
+.form-select { cursor: pointer; appearance: none; }
+.form-row { display: flex; gap: 10px; }
+.form-row .form-group { flex: 1; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+.btn-cancel {
+  background: none; border: 1px solid var(--border); border-radius: 6px; padding: 8px 16px;
+  font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 0.8rem; font-weight: 500;
+  color: var(--text-muted); cursor: pointer; transition: border-color 0.15s;
+}
+.btn-cancel:hover { border-color: var(--text-muted); }
+.btn-save {
+  background: var(--accent); color: #fff; border: none; border-radius: 6px; padding: 8px 18px;
+  font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 0.8rem; font-weight: 600;
+  cursor: pointer; transition: opacity 0.15s;
+}
+.btn-save:hover { opacity: 0.88; }
 .empty-state {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--text-muted);
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.8rem;
+  text-align: center; padding: 60px 20px; color: var(--text-muted);
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem;
 }
+.empty-state .empty-icon { font-size: 2rem; margin-bottom: 12px; opacity: 0.4; }
+.empty-state p { margin-top: 6px; font-size: 0.72rem; color: var(--text-dim); }
 @media (max-width: 540px) {
-  header { flex-wrap: wrap; }
-  header h1 { width: 100%; }
-  .search-box { width: 100%; }
-  .field-label { width: 36px; font-size: 0.6rem; }
+  header { flex-wrap: wrap; gap: 10px; }
+  .header-right { width: 100%; }
+  .search-box { flex: 1; width: auto; }
+  .field-label { width: 34px; font-size: 0.55rem; }
+  .form-row { flex-direction: column; gap: 0; }
 }
 </style>
 </head>
@@ -293,200 +230,247 @@ header .dot {
 
 <div class="shell">
   <header>
-    <span class="dot"></span>
+    <div class="logo">
+      <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+    </div>
     <h1>Central de Links</h1>
-    <div class="search-box">
-      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="text" id="search" placeholder="Buscar..." autocomplete="off">
+    <div class="header-right">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="search" placeholder="Buscar..." autocomplete="off">
+      </div>
+      <button class="btn-add" onclick="openModal()">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Novo
+      </button>
     </div>
   </header>
-
-  <div id="sections">
-
-    <!-- SPY TOOLS -->
-    <div class="section" data-section="spy">
-      <div class="section-label">Spy Tools</div>
-      <div class="section-cards">
-
-        <div class="card" data-tags="swipe offers spy criativos biblioteca ads">
-          <div class="card-header">
-            <div class="card-icon amber">S</div>
-            <div>
-              <div class="card-title">Swipe Offers</div>
-              <div class="card-subtitle">Swipe Files — biblioteca de criativos</div>
-            </div>
-          </div>
-          <div class="card-fields">
-            <div class="field">
-              <span class="field-label">email</span>
-              <span class="field-value" data-val="pedrolukas26@gmail.com">pedrolukas26@gmail.com</span>
-              <button class="btn-copy" onclick="copyVal(this)">copiar</button>
-            </div>
-            <div class="field">
-              <span class="field-label">senha</span>
-              <span class="field-value masked" data-val="Mpa012609.">*************</span>
-              <button class="btn-toggle" onclick="toggleMask(this)" aria-label="Mostrar senha">
-                <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              </button>
-              <button class="btn-copy" onclick="copyVal(this)">copiar</button>
-            </div>
-          </div>
-          <div class="card-actions">
-            <a class="btn-login" href="https://app.swipeoffers.com.br/swipe-files" target="_blank" rel="noopener" onclick="autoCopy(this)">
-              Acessar
-              <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-            </a>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- CURSOS -->
-    <div class="section" data-section="cursos">
-      <div class="section-label">Cursos</div>
-      <div class="section-cards">
-
-        <div class="card" data-tags="outbox club luiggi stecca curso campus modulo">
-          <div class="card-header">
-            <div class="card-icon purple">O</div>
-            <div>
-              <div class="card-title">Outbox Club</div>
-              <div class="card-subtitle">Campus Luiggi Stecca — Curso completo</div>
-            </div>
-          </div>
-          <div class="card-fields">
-            <div class="field">
-              <span class="field-label">email</span>
-              <span class="field-value" data-val="pedrolukas26@gmail.com">pedrolukas26@gmail.com</span>
-              <button class="btn-copy" onclick="copyVal(this)">copiar</button>
-            </div>
-            <div class="field">
-              <span class="field-label">senha</span>
-              <span class="field-value masked" data-val="2REda7auEO">*************</span>
-              <button class="btn-toggle" onclick="toggleMask(this)" aria-label="Mostrar senha">
-                <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              </button>
-              <button class="btn-copy" onclick="copyVal(this)">copiar</button>
-            </div>
-          </div>
-          <div class="card-actions">
-            <a class="btn-login" href="https://app.luiggistecca.com/campus/tarefa/outbox-club/41-modulo-1-introducao/desafio-outbox-comece-aqui#m-41" target="_blank" rel="noopener" onclick="autoCopy(this)">
-              Acessar
-              <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-            </a>
-          </div>
-        </div>
-
-        <div class="card" data-tags="brazilian wave memberkit area membros curso">
-          <div class="card-header">
-            <div class="card-icon blue">B</div>
-            <div>
-              <div class="card-title">Brazilian Wave</div>
-              <div class="card-subtitle">MemberKit — Área de membros</div>
-            </div>
-          </div>
-          <div class="card-fields">
-            <div class="field">
-              <span class="field-label">email</span>
-              <span class="field-value" data-val="contato@blackeaglegroup.com.br">contato@blackeaglegroup.com.br</span>
-              <button class="btn-copy" onclick="copyVal(this)">copiar</button>
-            </div>
-            <div class="field">
-              <span class="field-label">senha</span>
-              <span class="field-value masked" data-val="20102024">*************</span>
-              <button class="btn-toggle" onclick="toggleMask(this)" aria-label="Mostrar senha">
-                <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              </button>
-              <button class="btn-copy" onclick="copyVal(this)">copiar</button>
-            </div>
-          </div>
-          <div class="card-actions">
-            <a class="btn-login" href="https://brazilianwave.memberkit.com.br/" target="_blank" rel="noopener" onclick="autoCopy(this)">
-              Acessar
-              <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-            </a>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
+  <div id="sections"></div>
+  <div class="empty-state" id="empty" hidden>
+    <div class="empty-icon">+</div>
+    Nenhum acesso cadastrado
+    <p>Clique em "Novo" para adicionar seu primeiro acesso</p>
   </div>
-
-  <div class="empty-state" id="empty" hidden>Nenhum acesso encontrado</div>
   <div class="toast" id="toast"></div>
 </div>
 
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">Novo Acesso</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Nome</label>
+        <input class="form-input" id="fName" placeholder="Ex: Swipe Offers">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Categoria</label>
+        <input class="form-input" id="fCategory" placeholder="Ex: Spy Tools" list="catList">
+        <datalist id="catList"></datalist>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Descricao</label>
+      <input class="form-input" id="fDesc" placeholder="Ex: Biblioteca de criativos">
+    </div>
+    <div class="form-group">
+      <label class="form-label">URL de acesso</label>
+      <input class="form-input" id="fUrl" placeholder="https://...">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Email / Login</label>
+        <input class="form-input" id="fEmail" placeholder="email@exemplo.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Senha</label>
+        <input class="form-input" id="fPass" type="password" placeholder="********">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Cor</label>
+        <select class="form-select" id="fColor">
+          <option value="blue">Azul</option>
+          <option value="purple">Roxo</option>
+          <option value="amber">Laranja</option>
+          <option value="green">Verde</option>
+          <option value="red">Vermelho</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Icone (1 letra)</label>
+        <input class="form-input" id="fIcon" placeholder="S" maxlength="2">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-save" id="btnSave" onclick="saveEntry()">Salvar</button>
+    </div>
+  </div>
+</div>
+
 <script>
+let entries = [];
+let editId = null;
+
+function load() {
+  try { const s = localStorage.getItem('xav_entries'); entries = s ? JSON.parse(s) : []; } catch { entries = []; }
+}
+function save() {
+  try { localStorage.setItem('xav_entries', JSON.stringify(entries)); } catch {}
+}
+function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+function attr(s) { return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function render(filter) {
+  const q = (filter || '').toLowerCase().trim();
+  const container = document.getElementById('sections');
+  const groups = {};
+  entries.forEach(e => {
+    const match = !q || e.name.toLowerCase().includes(q) || (e.desc||'').toLowerCase().includes(q) || e.category.toLowerCase().includes(q) || (e.email||'').toLowerCase().includes(q);
+    if (!match) return;
+    if (!groups[e.category]) groups[e.category] = [];
+    groups[e.category].push(e);
+  });
+  const cats = Object.keys(groups).sort();
+  if (!cats.length) { container.innerHTML = ''; document.getElementById('empty').hidden = false; return; }
+  document.getElementById('empty').hidden = true;
+  container.innerHTML = cats.map(cat => `
+    <div class="section">
+      <div class="section-label">${esc(cat)} <span class="section-count">${groups[cat].length}</span></div>
+      <div class="section-cards">${groups[cat].map(cardHtml).join('')}</div>
+    </div>`).join('');
+  updateCatList();
+}
+
+function cardHtml(e) {
+  const passLen = (e.pass||'').length || 8;
+  return `<div class="card" data-id="${e.id}">
+    <div class="card-header">
+      <div class="card-icon ${e.color}">${esc(e.icon)}</div>
+      <div><div class="card-title">${esc(e.name)}</div><div class="card-subtitle">${esc(e.desc)}</div></div>
+      <div class="card-header-right">
+        <button class="btn-card-action" onclick="editEntry('${e.id}')" title="Editar">
+          <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="btn-card-action delete" onclick="deleteEntry('${e.id}')" title="Excluir">
+          <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="card-fields">
+      <div class="field">
+        <span class="field-label">email</span>
+        <span class="field-value" data-val="${attr(e.email)}">${esc(e.email)}</span>
+        <button class="btn-copy" onclick="copyVal(this)">copiar</button>
+      </div>
+      <div class="field">
+        <span class="field-label">senha</span>
+        <span class="field-value masked" data-val="${attr(e.pass)}"><span>${'*'.repeat(passLen)}</span></span>
+        <button class="btn-toggle" onclick="toggleMask(this)"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        <button class="btn-copy" onclick="copyVal(this)">copiar</button>
+      </div>
+    </div>
+    <div class="card-actions">
+      <a class="btn-login" href="${attr(e.url)}" target="_blank" rel="noopener" onclick="autoCopy(this)">
+        Acessar <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+      </a>
+    </div>
+  </div>`;
+}
+
 function copyVal(btn) {
-  const field = btn.closest('.field');
-  const val = field.querySelector('.field-value').dataset.val;
+  const val = btn.closest('.field').querySelector('.field-value').dataset.val;
   navigator.clipboard.writeText(val).then(() => {
-    btn.textContent = 'copiado';
-    btn.classList.add('copied');
+    btn.textContent = 'copiado'; btn.classList.add('copied');
     setTimeout(() => { btn.textContent = 'copiar'; btn.classList.remove('copied'); }, 1500);
   });
 }
-
 function toggleMask(btn) {
-  const field = btn.closest('.field');
-  const span = field.querySelector('.field-value');
+  const span = btn.closest('.field').querySelector('.field-value');
   if (span.classList.contains('masked')) {
-    span.textContent = span.dataset.val;
-    span.classList.remove('masked');
+    span.textContent = span.dataset.val; span.classList.remove('masked');
     btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
   } else {
-    span.textContent = '*'.repeat(span.dataset.val.length);
-    span.classList.add('masked');
+    span.textContent = '*'.repeat(span.dataset.val.length); span.classList.add('masked');
     btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
   }
 }
-
 function autoCopy(btn) {
-  const card = btn.closest('.card');
-  const senhaField = card.querySelector('.field-value.masked, .field-value[data-val]');
-  const allFields = card.querySelectorAll('.field-value[data-val]');
-  const senha = allFields.length > 1 ? allFields[1].dataset.val : allFields[0].dataset.val;
-  navigator.clipboard.writeText(senha).then(() => {
-    showToast('Senha copiada — cole no login');
-  });
+  const fields = btn.closest('.card').querySelectorAll('.field-value[data-val]');
+  const senha = fields.length > 1 ? fields[1].dataset.val : fields[0].dataset.val;
+  navigator.clipboard.writeText(senha).then(() => showToast('Senha copiada — cole no login'));
 }
-
 function showToast(msg) {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 2200);
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+function openModal() {
+  editId = null;
+  document.getElementById('modalTitle').textContent = 'Novo Acesso';
+  document.getElementById('btnSave').textContent = 'Salvar';
+  ['fName','fDesc','fUrl','fEmail','fPass','fIcon','fCategory'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('fColor').value = 'blue';
+  document.getElementById('modal').classList.add('open');
+  document.getElementById('fName').focus();
+}
+function editEntry(id) {
+  const e = entries.find(x => x.id === id); if (!e) return;
+  editId = id;
+  document.getElementById('modalTitle').textContent = 'Editar Acesso';
+  document.getElementById('btnSave').textContent = 'Atualizar';
+  document.getElementById('fName').value = e.name;
+  document.getElementById('fDesc').value = e.desc || '';
+  document.getElementById('fUrl').value = e.url || '';
+  document.getElementById('fEmail').value = e.email || '';
+  document.getElementById('fPass').value = e.pass || '';
+  document.getElementById('fColor').value = e.color || 'blue';
+  document.getElementById('fIcon').value = e.icon || '';
+  document.getElementById('fCategory').value = e.category || '';
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function saveEntry() {
+  const name = document.getElementById('fName').value.trim();
+  const category = document.getElementById('fCategory').value.trim();
+  if (!name || !category) { showToast('Nome e categoria obrigatorios'); return; }
+  const data = {
+    name, category,
+    desc: document.getElementById('fDesc').value.trim(),
+    url: document.getElementById('fUrl').value.trim(),
+    email: document.getElementById('fEmail').value.trim(),
+    pass: document.getElementById('fPass').value,
+    color: document.getElementById('fColor').value,
+    icon: document.getElementById('fIcon').value.trim() || name[0].toUpperCase()
+  };
+  if (editId) {
+    const idx = entries.findIndex(x => x.id === editId);
+    if (idx >= 0) entries[idx] = { ...entries[idx], ...data };
+    showToast('Acesso atualizado');
+  } else {
+    data.id = 'e' + Date.now();
+    entries.push(data);
+    showToast('Acesso adicionado');
+  }
+  save(); render(document.getElementById('search').value); closeModal();
+}
+function deleteEntry(id) {
+  const e = entries.find(x => x.id === id);
+  if (!e || !confirm('Excluir "' + e.name + '"?')) return;
+  entries = entries.filter(x => x.id !== id);
+  save(); render(document.getElementById('search').value); showToast('Acesso excluido');
+}
+function updateCatList() {
+  const cats = [...new Set(entries.map(e => e.category))].sort();
+  document.getElementById('catList').innerHTML = cats.map(c => '<option value="' + esc(c) + '">').join('');
 }
 
-const searchInput = document.getElementById('search');
-const sections = document.querySelectorAll('.section');
-const empty = document.getElementById('empty');
+document.getElementById('search').addEventListener('input', e => render(e.target.value));
+document.getElementById('modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-searchInput.addEventListener('input', () => {
-  const q = searchInput.value.toLowerCase().trim();
-  let anyVisible = false;
-
-  sections.forEach(section => {
-    const cards = section.querySelectorAll('.card');
-    let sectionHasVisible = false;
-
-    cards.forEach(card => {
-      const title = card.querySelector('.card-title').textContent.toLowerCase();
-      const sub = card.querySelector('.card-subtitle').textContent.toLowerCase();
-      const tags = (card.dataset.tags || '').toLowerCase();
-      const match = !q || title.includes(q) || sub.includes(q) || tags.includes(q);
-      card.hidden = !match;
-      if (match) sectionHasVisible = true;
-    });
-
-    section.hidden = !sectionHasVisible;
-    if (sectionHasVisible) anyVisible = true;
-  });
-
-  empty.hidden = anyVisible;
-});
+load(); render();
 </script>
 
 </body>
