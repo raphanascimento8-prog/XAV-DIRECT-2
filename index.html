@@ -103,7 +103,29 @@ header .dot {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.cards { display: flex; flex-direction: column; gap: 12px; }
+
+.section { margin-bottom: 28px; }
+.section-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  padding-left: 2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.section-cards { display: flex; flex-direction: column; gap: 10px; }
+
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -132,6 +154,7 @@ header .dot {
 .card-icon.amber { background: var(--amber-dim); color: var(--amber); }
 .card-icon.purple { background: var(--purple-dim); color: var(--purple); }
 .card-icon.blue { background: var(--accent-dim); color: var(--accent); }
+.card-icon.green { background: var(--green-dim); color: var(--green); }
 .card-title { font-size: 0.95rem; font-weight: 600; line-height: 1.3; }
 .card-subtitle { font-size: 0.72rem; color: var(--text-muted); margin-top: 1px; }
 .card-fields { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
@@ -204,7 +227,7 @@ header .dot {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.card-actions { display: flex; gap: 8px; }
+.card-actions { display: flex; gap: 8px; align-items: center; }
 .btn-login {
   display: inline-flex;
   align-items: center;
@@ -229,6 +252,27 @@ header .dot {
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--green);
+  color: #fff;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 8px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 100;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 .empty-state {
   text-align: center;
@@ -257,104 +301,121 @@ header .dot {
     </div>
   </header>
 
-  <div class="cards" id="cards">
+  <div id="sections">
 
-    <div class="card" data-tags="swipe offers spy criativos biblioteca ads">
-      <div class="card-header">
-        <div class="card-icon amber">S</div>
-        <div>
-          <div class="card-title">Swipe Offers</div>
-          <div class="card-subtitle">Swipe Files — biblioteca de criativos</div>
+    <!-- SPY TOOLS -->
+    <div class="section" data-section="spy">
+      <div class="section-label">Spy Tools</div>
+      <div class="section-cards">
+
+        <div class="card" data-tags="swipe offers spy criativos biblioteca ads">
+          <div class="card-header">
+            <div class="card-icon amber">S</div>
+            <div>
+              <div class="card-title">Swipe Offers</div>
+              <div class="card-subtitle">Swipe Files — biblioteca de criativos</div>
+            </div>
+          </div>
+          <div class="card-fields">
+            <div class="field">
+              <span class="field-label">email</span>
+              <span class="field-value" data-val="pedrolukas26@gmail.com">pedrolukas26@gmail.com</span>
+              <button class="btn-copy" onclick="copyVal(this)">copiar</button>
+            </div>
+            <div class="field">
+              <span class="field-label">senha</span>
+              <span class="field-value masked" data-val="Mpa012609.">*************</span>
+              <button class="btn-toggle" onclick="toggleMask(this)" aria-label="Mostrar senha">
+                <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+              <button class="btn-copy" onclick="copyVal(this)">copiar</button>
+            </div>
+          </div>
+          <div class="card-actions">
+            <a class="btn-login" href="https://app.swipeoffers.com.br/swipe-files" target="_blank" rel="noopener" onclick="autoCopy(this)">
+              Acessar
+              <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+            </a>
+          </div>
         </div>
-      </div>
-      <div class="card-fields">
-        <div class="field">
-          <span class="field-label">email</span>
-          <span class="field-value" data-val="pedrolukas26@gmail.com">pedrolukas26@gmail.com</span>
-          <button class="btn-copy" onclick="copyVal(this)">copiar</button>
-        </div>
-        <div class="field">
-          <span class="field-label">senha</span>
-          <span class="field-value masked" data-val="Mpa012609.">*************</span>
-          <button class="btn-toggle" onclick="toggleMask(this)" aria-label="Mostrar senha">
-            <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-          <button class="btn-copy" onclick="copyVal(this)">copiar</button>
-        </div>
-      </div>
-      <div class="card-actions">
-        <a class="btn-login" href="https://app.swipeoffers.com.br/swipe-files" target="_blank" rel="noopener">
-          Acessar
-          <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-        </a>
+
       </div>
     </div>
 
-    <div class="card" data-tags="outbox club luiggi stecca curso campus modulo">
-      <div class="card-header">
-        <div class="card-icon purple">O</div>
-        <div>
-          <div class="card-title">Outbox Club</div>
-          <div class="card-subtitle">Campus Luiggi Stecca — Curso completo</div>
-        </div>
-      </div>
-      <div class="card-fields">
-        <div class="field">
-          <span class="field-label">email</span>
-          <span class="field-value" data-val="pedrolukas26@gmail.com">pedrolukas26@gmail.com</span>
-          <button class="btn-copy" onclick="copyVal(this)">copiar</button>
-        </div>
-        <div class="field">
-          <span class="field-label">senha</span>
-          <span class="field-value masked" data-val="2REda7auEO">*************</span>
-          <button class="btn-toggle" onclick="toggleMask(this)" aria-label="Mostrar senha">
-            <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-          <button class="btn-copy" onclick="copyVal(this)">copiar</button>
-        </div>
-      </div>
-      <div class="card-actions">
-        <a class="btn-login" href="https://app.luiggistecca.com/campus/tarefa/outbox-club/41-modulo-1-introducao/desafio-outbox-comece-aqui#m-41" target="_blank" rel="noopener">
-          Acessar
-          <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-        </a>
-      </div>
-    </div>
+    <!-- CURSOS -->
+    <div class="section" data-section="cursos">
+      <div class="section-label">Cursos</div>
+      <div class="section-cards">
 
-    <div class="card" data-tags="brazilian wave memberkit area membros curso">
-      <div class="card-header">
-        <div class="card-icon blue">B</div>
-        <div>
-          <div class="card-title">Brazilian Wave</div>
-          <div class="card-subtitle">MemberKit — Área de membros</div>
+        <div class="card" data-tags="outbox club luiggi stecca curso campus modulo">
+          <div class="card-header">
+            <div class="card-icon purple">O</div>
+            <div>
+              <div class="card-title">Outbox Club</div>
+              <div class="card-subtitle">Campus Luiggi Stecca — Curso completo</div>
+            </div>
+          </div>
+          <div class="card-fields">
+            <div class="field">
+              <span class="field-label">email</span>
+              <span class="field-value" data-val="pedrolukas26@gmail.com">pedrolukas26@gmail.com</span>
+              <button class="btn-copy" onclick="copyVal(this)">copiar</button>
+            </div>
+            <div class="field">
+              <span class="field-label">senha</span>
+              <span class="field-value masked" data-val="2REda7auEO">*************</span>
+              <button class="btn-toggle" onclick="toggleMask(this)" aria-label="Mostrar senha">
+                <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+              <button class="btn-copy" onclick="copyVal(this)">copiar</button>
+            </div>
+          </div>
+          <div class="card-actions">
+            <a class="btn-login" href="https://app.luiggistecca.com/campus/tarefa/outbox-club/41-modulo-1-introducao/desafio-outbox-comece-aqui#m-41" target="_blank" rel="noopener" onclick="autoCopy(this)">
+              Acessar
+              <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+            </a>
+          </div>
         </div>
-      </div>
-      <div class="card-fields">
-        <div class="field">
-          <span class="field-label">email</span>
-          <span class="field-value" data-val="contato@blackeaglegroup.com.br">contato@blackeaglegroup.com.br</span>
-          <button class="btn-copy" onclick="copyVal(this)">copiar</button>
+
+        <div class="card" data-tags="brazilian wave memberkit area membros curso">
+          <div class="card-header">
+            <div class="card-icon blue">B</div>
+            <div>
+              <div class="card-title">Brazilian Wave</div>
+              <div class="card-subtitle">MemberKit — Área de membros</div>
+            </div>
+          </div>
+          <div class="card-fields">
+            <div class="field">
+              <span class="field-label">email</span>
+              <span class="field-value" data-val="contato@blackeaglegroup.com.br">contato@blackeaglegroup.com.br</span>
+              <button class="btn-copy" onclick="copyVal(this)">copiar</button>
+            </div>
+            <div class="field">
+              <span class="field-label">senha</span>
+              <span class="field-value masked" data-val="20102024">*************</span>
+              <button class="btn-toggle" onclick="toggleMask(this)" aria-label="Mostrar senha">
+                <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+              <button class="btn-copy" onclick="copyVal(this)">copiar</button>
+            </div>
+          </div>
+          <div class="card-actions">
+            <a class="btn-login" href="https://brazilianwave.memberkit.com.br/" target="_blank" rel="noopener" onclick="autoCopy(this)">
+              Acessar
+              <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+            </a>
+          </div>
         </div>
-        <div class="field">
-          <span class="field-label">senha</span>
-          <span class="field-value masked" data-val="20102024">*************</span>
-          <button class="btn-toggle" onclick="toggleMask(this)" aria-label="Mostrar senha">
-            <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-          <button class="btn-copy" onclick="copyVal(this)">copiar</button>
-        </div>
-      </div>
-      <div class="card-actions">
-        <a class="btn-login" href="https://brazilianwave.memberkit.com.br/" target="_blank" rel="noopener">
-          Acessar
-          <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-        </a>
+
       </div>
     </div>
 
   </div>
 
   <div class="empty-state" id="empty" hidden>Nenhum acesso encontrado</div>
+  <div class="toast" id="toast"></div>
 </div>
 
 <script>
@@ -367,6 +428,7 @@ function copyVal(btn) {
     setTimeout(() => { btn.textContent = 'copiar'; btn.classList.remove('copied'); }, 1500);
   });
 }
+
 function toggleMask(btn) {
   const field = btn.closest('.field');
   const span = field.querySelector('.field-value');
@@ -380,21 +442,50 @@ function toggleMask(btn) {
     btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
   }
 }
+
+function autoCopy(btn) {
+  const card = btn.closest('.card');
+  const senhaField = card.querySelector('.field-value.masked, .field-value[data-val]');
+  const allFields = card.querySelectorAll('.field-value[data-val]');
+  const senha = allFields.length > 1 ? allFields[1].dataset.val : allFields[0].dataset.val;
+  navigator.clipboard.writeText(senha).then(() => {
+    showToast('Senha copiada — cole no login');
+  });
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
 const searchInput = document.getElementById('search');
-const cards = document.querySelectorAll('.card');
+const sections = document.querySelectorAll('.section');
 const empty = document.getElementById('empty');
+
 searchInput.addEventListener('input', () => {
   const q = searchInput.value.toLowerCase().trim();
-  let any = false;
-  cards.forEach(card => {
-    const title = card.querySelector('.card-title').textContent.toLowerCase();
-    const sub = card.querySelector('.card-subtitle').textContent.toLowerCase();
-    const tags = (card.dataset.tags || '').toLowerCase();
-    const match = !q || title.includes(q) || sub.includes(q) || tags.includes(q);
-    card.hidden = !match;
-    if (match) any = true;
+  let anyVisible = false;
+
+  sections.forEach(section => {
+    const cards = section.querySelectorAll('.card');
+    let sectionHasVisible = false;
+
+    cards.forEach(card => {
+      const title = card.querySelector('.card-title').textContent.toLowerCase();
+      const sub = card.querySelector('.card-subtitle').textContent.toLowerCase();
+      const tags = (card.dataset.tags || '').toLowerCase();
+      const match = !q || title.includes(q) || sub.includes(q) || tags.includes(q);
+      card.hidden = !match;
+      if (match) sectionHasVisible = true;
+    });
+
+    section.hidden = !sectionHasVisible;
+    if (sectionHasVisible) anyVisible = true;
   });
-  empty.hidden = any;
+
+  empty.hidden = anyVisible;
 });
 </script>
 
