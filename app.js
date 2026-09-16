@@ -42,7 +42,6 @@ function render(filter) {
   container.innerHTML = cats.map(cat =>
     '<div class="section"><div class="section-label">' + esc(cat) + ' <span class="section-count">' + groups[cat].length + '</span></div><div class="section-cards">' + groups[cat].map(cardHtml).join('') + '</div></div>'
   ).join('');
-  updateCatList();
 }
 
 function cardHtml(e) {
@@ -96,7 +95,8 @@ function openModal() {
   editId = null;
   document.getElementById('modalTitle').textContent = 'Novo Acesso';
   document.getElementById('btnSave').textContent = 'Salvar';
-  ['fName','fDesc','fUrl','fEmail','fPass','fIcon','fCategory'].forEach(id => document.getElementById(id).value = '');
+  ['fName','fDesc','fUrl','fEmail','fPass','fIcon'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('fCategory').value = 'Spy Tools';
   document.getElementById('fColor').value = 'blue';
   document.getElementById('modal').classList.add('open');
   document.getElementById('fName').focus();
@@ -151,11 +151,6 @@ async function deleteEntry(id) {
   if (error) { showToast('Erro: ' + error.message); return; }
   showToast('Acesso excluido');
   await loadEntries();
-}
-
-function updateCatList() {
-  const cats = [...new Set(entries.map(e => e.category))].sort();
-  document.getElementById('catList').innerHTML = cats.map(c => '<option value="' + esc(c) + '">').join('');
 }
 
 document.getElementById('search').addEventListener('input', e => render(e.target.value));
